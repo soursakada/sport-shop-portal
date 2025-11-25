@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_order_lines",
+  "info": {
+    "displayName": "Order line"
+  },
+  "attributes": {
+    "product_ref": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    },
+    "variant": { "type": "json" },
+    "quantity": { "type": "integer", "required": true },
+    "unit_price": { "type": "decimal" },
+    "customization": { "type": "json" }
+  }
+}

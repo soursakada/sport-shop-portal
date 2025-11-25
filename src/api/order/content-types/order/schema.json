@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Order"
+  },
+  "attributes": {
+    "customer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::customer.customer"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "paid", "fulfilled", "cancelled"],
+      "default": "pending"
+    },
+    "lines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "order.line",
+      "required": true
+    },
+    "total": {
+      "type": "decimal",
+      "required": true
+    }
+  }
+}

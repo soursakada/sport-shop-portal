@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_product_customization_templates",
+  "info": {
+    "displayName": "Customization template"
+  },
+  "attributes": {
+    "fields": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.customization-field",
+      "required": true
+    },
+    "previewConfig": { "type": "json" }
+  }
+}
