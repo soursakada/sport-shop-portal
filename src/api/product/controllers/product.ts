@@ -7,10 +7,10 @@ export default factories.createCoreController('api::product.product', ({ strapi 
     async findAll(ctx) {
         try {
             const service = strapi.service('api::product.product');
-            const { page, pageSize } = ctx.query;
+            const { page, pageSize, search } = ctx.query;
             const pageNum = parseInt(page as string, 10) || 1;
             const pageSizeNum = parseInt(pageSize as string, 10) || 10;
-            const posts = await service.findAll({ page: pageNum, pageSize: pageSizeNum });
+            const posts = await service.findAll({ page: pageNum, pageSize: pageSizeNum, search });
             ctx.body = posts;
         } catch (error) {
             ctx.throw(500, error);

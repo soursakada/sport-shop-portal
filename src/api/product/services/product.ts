@@ -10,47 +10,23 @@ class ProductService extends BaseService<Product> {
         super("api::product.product");
     }
 
-    // "attributes": {
-    //     "title": { "type": "string", "required": true },
-    //     "slug": { "type": "uid", "targetField": "title" },
-    //     "description": { "type": "text" },
-    //     "category": {
-    //         "type": "relation",
-    //         "relation": "manyToOne",
-    //         "target": "api::category.category",
-    //         "inversedBy": "products"
-    //     },
-    //     "tags": {
-    //         "type": "relation",
-    //         "relation": "manyToMany",
-    //         "target": "api::tag.tag",
-    //         "mappedBy": "products"
-    //     },
-    //     "price": { "type": "decimal", "required": true },
-    //     "currency": { "type": "string", "default": "USD" },
-    //     "images": {
-    //         "type": "media",
-    //         "multiple": true,
-    //         "required": true
-    //     },
-    //     "variants": {
-    //         "type": "component",
-    //         "repeatable": true,
-    //         "component": "product.variant"
-    //     },
-    //     "allow_customization": { "type": "boolean", "default": false },
-    //     "customization_template": {
-    //         "type": "component",
-    //         "component": "product.customization-template"
-    //     }
-    // }
-
     /** Fetch products with pagination + custom response */
-    async findAll({ page, pageSize }: FetchProductProps) {
+    async findAll({ page, pageSize, search }: FetchProductProps) {
         const start = (page - 1) * pageSize;
 
-        // Fetch paginated data using QueryParams<T>
+        // Build search filter only if search exists
+        const searchFilter = search
+            ? {
+                $or: [
+                    { title: { $containsi: search } },
+                    { slug: { $containsi: search } }
+                ]
+            }
+            : {};
+
+        // Fetch paginated + search + populated data
         const data = await this.find({
+            filters: searchFilter,
             pagination: {
                 page,
                 pageSize,
@@ -63,20 +39,28 @@ class ProductService extends BaseService<Product> {
                 variants: true,
                 customization_template: true,
                 images: {
-                    fields: ["id", "name", "url"]
-                }
+                    fields: ["id", "name", "url"],
+                },
             },
             sort: {
-                createdAt: 'desc',
+                createdAt: "desc",
             },
         } as QueryParams<Product>);
 
-        // Count total records
-        const total = await this.count();
+        // Count total records with same filter
+        const total = await this.count({
+            filters: searchFilter,
+        });
 
-        // Build custom response
-        return this.createResponse(data, { page, pageSize, total, message: "fetch post successfully" });
+        // Custom response
+        return this.createResponse(data, {
+            page,
+            pageSize,
+            total,
+            message: "fetch post successfully",
+        });
     }
+
     // product detail
     async productDetail({ documentId }: FetchProductOneProps) {
 
